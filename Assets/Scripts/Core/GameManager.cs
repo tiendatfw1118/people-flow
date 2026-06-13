@@ -52,7 +52,6 @@ namespace PeopleFlow.Core
                 return;
             }
             Instance = this;
-            Debug.Log("[GameManager] Awake — Instance set");
         }
 
         private void OnEnable()
@@ -114,14 +113,7 @@ namespace PeopleFlow.Core
                 objectPooler.ReturnAll();
             }
 
-            // Clear all event subscriptions to prevent stale references
-            EventManager.ClearAll();
-
-            // Re-subscribe our own events
-            EventManager.OnGateCompleted += HandleGateCompleted;
-            EventManager.OnLevelLose += HandleLevelLose;
-
-            // Notify other systems to reinitialize
+            // Fire restart BEFORE clearing events so subscribers can handle it
             EventManager.RaiseLevelRestart();
 
             Debug.Log("[GameManager] Level restarted");
@@ -158,8 +150,6 @@ namespace PeopleFlow.Core
         private void TransitionTo(GameState newState)
         {
             if (CurrentState == newState) return;
-
-            Debug.Log($"[GameManager] State: {CurrentState} → {newState}");
             CurrentState = newState;
         }
     }

@@ -91,7 +91,6 @@ namespace PeopleFlow.Core
             else
             {
                 // Auto-expand: create new object if pool is exhausted
-                Debug.LogWarning($"[ObjectPooler] Pool for {type} exhausted. Creating new object.");
                 obj = CreateNewObject(type);
             }
 

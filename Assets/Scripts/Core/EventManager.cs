@@ -15,8 +15,11 @@ namespace PeopleFlow.Core
     {
         // ─── Minion Events ───────────────────────────────────────────────
 
-        /// <summary>Fired when a Minion is spawned from a Station.</summary>
+        /// <summary>Fired when a Minion is spawned from a Station onto the path.</summary>
         public static event Action<MinionType> OnMinionSpawned;
+
+        /// <summary>Fired when a Minion exits the path (caught by a gate). Used for capacity tracking.</summary>
+        public static event Action<MinionType> OnMinionExitedPath;
 
         /// <summary>Fired when a correct-type Minion enters a Gate. Param: gate index.</summary>
         public static event Action<int> OnCorrectMinion;
@@ -24,10 +27,10 @@ namespace PeopleFlow.Core
         /// <summary>Fired when a wrong-type Minion enters a Gate. Param: gate index.</summary>
         public static event Action<int> OnWrongMinion;
 
-        // ─── Capacity Events ─────────────────────────────────────────────
+        // ─── Path Capacity Events ─────────────────────────────────────────
 
-        /// <summary>Fired when capacity changes. Params: (currentUsed, maxCapacity).</summary>
-        public static event Action<int, int> OnCapacityChanged;
+        /// <summary>Fired when path population changes. Params: (currentOnPath, maxCapacity).</summary>
+        public static event Action<int, int> OnPathCapacityChanged;
 
         // ─── Gate Events ─────────────────────────────────────────────────
 
@@ -57,6 +60,11 @@ namespace PeopleFlow.Core
             OnMinionSpawned?.Invoke(type);
         }
 
+        public static void RaiseMinionExitedPath(MinionType type)
+        {
+            OnMinionExitedPath?.Invoke(type);
+        }
+
         public static void RaiseCorrectMinion(int gateIndex)
         {
             OnCorrectMinion?.Invoke(gateIndex);
@@ -67,9 +75,9 @@ namespace PeopleFlow.Core
             OnWrongMinion?.Invoke(gateIndex);
         }
 
-        public static void RaiseCapacityChanged(int currentUsed, int maxCapacity)
+        public static void RaisePathCapacityChanged(int currentOnPath, int maxCapacity)
         {
-            OnCapacityChanged?.Invoke(currentUsed, maxCapacity);
+            OnPathCapacityChanged?.Invoke(currentOnPath, maxCapacity);
         }
 
         public static void RaiseGateCompleted(int gateIndex)
@@ -104,9 +112,10 @@ namespace PeopleFlow.Core
         public static void ClearAll()
         {
             OnMinionSpawned = null;
+            OnMinionExitedPath = null;
             OnCorrectMinion = null;
             OnWrongMinion = null;
-            OnCapacityChanged = null;
+            OnPathCapacityChanged = null;
             OnGateCompleted = null;
             OnTimerChanged = null;
             OnLevelWin = null;
